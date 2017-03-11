@@ -1,4 +1,6 @@
+._*
 *.o
 js
 genframe
 acnraw.h
+*.d
