@@ -18,7 +18,7 @@ bool js::open(const char *JOY_DEV)
 	::ioctl(joy_fd, JSIOCGBUTTONS, &num_of_buttons);		//	GET THE NUMBER OF BUTTONS ON THE JS
 	::ioctl(joy_fd, JSIOCGNAME(80), &name_of_joystick);	//	GET THE NAME OF THE JS
 
-	::fcntl(joy_fd, F_SETFL, O_NONBLOCK);
+	// ::fcntl(joy_fd, F_SETFL, O_NONBLOCK);
 
 	return true;
 }

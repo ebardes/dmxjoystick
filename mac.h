@@ -26,3 +26,14 @@ public:
 	bool open(const char *);
 	void tick();
 };
+
+class eth
+{
+	int eth_fd;
+
+	struct E131_2009 frame;
+public:
+	bool openRead(int universe);
+	bool read(void);
+	void dump(void);
+};

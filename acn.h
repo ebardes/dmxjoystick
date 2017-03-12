@@ -3,6 +3,8 @@
 
 #define DMX_CHANNELS 512
 
+#define ACN_PORT 5568
+
 struct E131_2009
 {
   /*
