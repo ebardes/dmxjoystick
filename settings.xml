@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <!--
+	 Notes:
+			 Byte Order: 1 = MSB, 0 = LSB
+			 DMX Offsets start at 1
+			 Universe Offsets start at 1
+		-->
+    <input_universe>1</input_universe>
+    <output_universe>2</output_universe>
+    <joystick>
+        <device>/dev/input/js0</device>
+    </joystick>
+    <pan offset="301" size="2" order="1"/>
+    <tilt offset="303" size="2" order="1"/>
+    <intensity offset="315" size="1" order="1"/>
+</settings>

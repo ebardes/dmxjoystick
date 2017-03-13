@@ -4,6 +4,24 @@
 js::js()
 {
 	memset(this, 0, sizeof(*this));
+	joy_fd = -1;
+}
+
+js::~js()
+{
+	if (joy_fd >= 0)
+	{
+		::close(joy_fd);
+	}
+}
+
+void js::close()
+{
+	if (joy_fd >= 0)
+	{
+		::close(joy_fd);
+		joy_fd = -1;
+	}
 }
 
 bool js::open(const char *JOY_DEV)

@@ -1,6 +1,9 @@
 #include "mac.h"
+#include "acn.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+#include <boost/detail/endian.hpp>
 
 const uint8_t raw_acn_packet[sizeof(struct E131_2009)] = {
 #include "acnraw.h"
@@ -11,7 +14,7 @@ static uint32_t addr = (239 << 24) | (255 << 16); // ACN Ethernet address 239.25
 #define WIDTH 16
 #define SPLIT 4
 
-void dumpBuffer(const unsigned char *buffer, int length)
+void dumpBuffer(const uint8_t*buffer, int length)
 {
 	int p = 0;
 	int i;
@@ -88,5 +91,27 @@ bool eth::read()
 
 void eth::dump()
 {
-	dumpBuffer((const unsigned char*) &frame.dmx_data, sizeof(frame.dmx_data));
+	dumpBuffer((const uint8_t*) &frame.dmx_data, sizeof(frame.dmx_data));
+}
+
+/*
+ */
+int dmxproperty::get(eth &eth)
+{
+	int value = 0;
+	switch (size)
+	{
+	case 2:
+		value = *(int16_t*) (eth.getBuffer() + offset);
+		if (order == 1)
+			value = ntohs(value);
+		value -= 32768;
+		break;
+
+	case 1:
+		value = (eth.getBuffer() [offset]);
+		break;
+	}
+
+	return value;
 }
