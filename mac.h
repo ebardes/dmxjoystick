@@ -28,7 +28,8 @@ public:
 	~js();
 	bool open(const char *);
 	void close();
-	void tick();
+	bool read();
+	bool okay();
 };
 
 class eth
@@ -53,6 +54,11 @@ class dmxproperty
 	int size;
 	int order;
 public:
+	bool linked;
+	dmxproperty() : linked(true) {}
+	int current;
+	int source;
+
 	void define(int offset, int size, int order)
 	{
 		this->offset = offset - 1;
@@ -61,24 +67,55 @@ public:
 	};
 
 	int get(eth &eth);
+	inline int updateSource(eth &eth) { source = get(eth); if (linked) current = source; }
 };
 
-class config
+class display
 {
-	boost::property_tree::ptree c;
+public:
+	void run(void);
+};
 
-	int getInt(const char *key) { return c.get<int>(key); }
+class fixture
+{
+public:
+	dmxproperty pan;
+	dmxproperty tilt;
+	dmxproperty iris;
+	dmxproperty intensity;
+};
 
+class instance
+{
+	void netreader();
 public:
 	int input_universe;
 	int output_universe;
 
 	std::string joystick_device;
 
-	dmxproperty pan;
-	dmxproperty tilt;
-	dmxproperty intensity;
+	js joystick;
+
+	eth in;
+	eth out;
+	fixture fix;
+
+	void init(void);
+
+	void runReader(void);
+	void runWriter(void);
+	void runJoystick(void);
+};
+
+class config
+{
+	boost::property_tree::ptree c;
+
+public:
 
 	void read(const char *name);
 	void save(const char *name);
 };
+
+extern instance instances[20];
+extern int instance_count;

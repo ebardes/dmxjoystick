@@ -6,14 +6,14 @@
 timer::timer(int hz)
 {
 	running = true;
+	sleep = hz;
 }
 
-void timer::run(void)
+bool timer::tick(void)
 {
-	while (running)
-	{
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
+	if (!running)
+		return false;
 
-		printf("tick\n");
-	}
+	boost::this_thread::sleep_for(boost::chrono::milliseconds(sleep));
+	return true;
 }

@@ -80,6 +80,11 @@ bool eth::openRead(int universe)
 	return true;
 }
 
+bool eth::openWrite(int universe)
+{
+	return true;
+}
+
 bool eth::read()
 {
 	int nbytes;

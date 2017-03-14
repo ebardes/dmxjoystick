@@ -1,57 +1,67 @@
 #include "mac.h"
 #include <boost/thread.hpp>
-#include <curses.h>
 #include "timer.h"
 
 config c;
 
+instance instances[20];
+int instance_count;
+
 void display_thread()
 {
-	char numbuf[500];
+	display d;
 
-	initscr();
-
-	endwin();
+	d.run();
+	std::cout  << "Display Shutdown" << std::endl;
 }
 
-void netin_thread()
+void instance::runReader()
 {
-	eth e;
-	e.openRead(c.input_universe);
-	while (e.read())
+	while (in.read())
 	{
-		std::cout <<
-			c.pan.get(e) <<
-			", " <<
-			c.tilt.get(e) <<
-			", " <<
-			c.intensity.get(e) <<
-			std::endl;
+		fix.pan.updateSource(in);
+		fix.tilt.updateSource(in);
+		fix.intensity.updateSource(in);
 	}
 }
 
+void instance::runWriter()
+{
+	timer t(200);
+	while (t.tick())
+	{
+	}
+}
+
+void instance::runJoystick()
+{
+	joystick.open(joystick_device.c_str());
+	while (joystick.read())
+	{
+	}
+}
+
+void instance::init(void)
+{
+	in.openRead(input_universe);
+	out.openWrite(output_universe);
+
+	boost::thread reader(boost::bind(&instance::runReader, this));
+	boost::thread writer(boost::bind(&instance::runWriter, this));
+	boost::thread stick(boost::bind(&instance::runJoystick, this));
+}
+
+
 int main(int argc, char **argv)
 {
-	// js j;
-	// j.open("/dev/input/js0");
-	
-
-//	eth e;
-//	e.openRead(1);
-//	while (e.read())
-//		e.dump();
-
-//	timer t(50);
-
-//	t.run();
-
 	c.read("settings.xml");
 //	c.save("settings.xml");
 
+	instance_count = 1;
+	instances[0].init();
+
 	boost::thread disp{display_thread};
-	boost::thread net_in{netin_thread};
 
 	disp.join();
-	net_in.join();
 	return 0;
 }

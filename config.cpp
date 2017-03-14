@@ -6,25 +6,29 @@ void config::read(const char *name)
 {
 	boost::property_tree::read_xml(name, c, boost::property_tree::xml_parser::trim_whitespace);
 
-	input_universe = getInt("settings.input_universe");
-	output_universe = getInt("settings.output_universe");
+	boost::property_tree::ptree &s = c.get_child("settings");
 
-	joystick_device = c.get<std::string>("settings.joystick.device");
+	instance &i = instances[0];
 
-	pan.define(
-		getInt("settings.pan.<xmlattr>.offset"),
-		getInt("settings.pan.<xmlattr>.size"),
-		getInt("settings.pan.<xmlattr>.order")
+	i.input_universe = s.get<int>("input_universe");
+	i.output_universe = s.get<int>("output_universe");
+
+	i.joystick_device = s.get<std::string>("joystick.device");
+
+	i.fix.pan.define(
+		s.get<int>("pan.<xmlattr>.offset"),
+		s.get<int>("pan.<xmlattr>.size"),
+		s.get<int>("pan.<xmlattr>.order")
 	);
-	tilt.define(
-		getInt("settings.tilt.<xmlattr>.offset"),
-		getInt("settings.tilt.<xmlattr>.size"),
-		getInt("settings.tilt.<xmlattr>.order")
+	i.fix.tilt.define(
+		s.get<int>("tilt.<xmlattr>.offset"),
+		s.get<int>("tilt.<xmlattr>.size"),
+		s.get<int>("tilt.<xmlattr>.order")
 	);
-	intensity.define(
-		getInt("settings.intensity.<xmlattr>.offset"),
-		getInt("settings.intensity.<xmlattr>.size"),
-		getInt("settings.intensity.<xmlattr>.order")
+	i.fix.intensity.define(
+		s.get<int>("intensity.<xmlattr>.offset"),
+		s.get<int>("intensity.<xmlattr>.size"),
+		s.get<int>("intensity.<xmlattr>.order")
 	);
 }
 

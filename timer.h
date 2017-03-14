@@ -2,7 +2,8 @@
 class timer
 {
 	bool running;
+	int sleep;
 public:
 	timer(int hz);
-	void run(void);
+	bool tick();
 };

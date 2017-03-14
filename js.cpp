@@ -41,7 +41,7 @@ bool js::open(const char *JOY_DEV)
 	return true;
 }
 
-void js::tick()
+bool js::read()
 {
 	js_event js;
 
@@ -57,5 +57,11 @@ void js::tick()
 			button [ js.number ] = js.value;
 			break;
 	}
+
+	return true;
 }
 
+bool js::okay()
+{
+	return joy_fd >= 0;
+}
