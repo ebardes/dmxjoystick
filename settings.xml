@@ -14,5 +14,5 @@
     <pan offset="301" size="2" order="1"/>
     <tilt offset="303" size="2" order="1"/>
     <intensity offset="315" size="1" order="1"/>
-    <iris offset="313" size="1" order="1"/>
+    <iris offset="313" size="1" order="1" min="0" max="132"/>
 </settings>

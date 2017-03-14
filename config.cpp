@@ -15,33 +15,42 @@ void config::read(const char *name)
 
 	i.joystick_device = s.get<std::string>("joystick.device");
 
-	i.fix.pan.define(
-		s.get<int>("pan.<xmlattr>.offset"),
-		s.get<int>("pan.<xmlattr>.size"),
-		s.get<int>("pan.<xmlattr>.order")
-	);
-	i.fix.tilt.define(
-		s.get<int>("tilt.<xmlattr>.offset"),
-		s.get<int>("tilt.<xmlattr>.size"),
-		s.get<int>("tilt.<xmlattr>.order")
-	);
-	i.fix.intensity.define(
-		s.get<int>("intensity.<xmlattr>.offset"),
-		s.get<int>("intensity.<xmlattr>.size"),
-		s.get<int>("intensity.<xmlattr>.order")
-	);
-	if(s.count("iris") > 0)
-	{
-		i.fix.iris.define(
-			s.get<int>("iris.<xmlattr>.offset"),
-			s.get<int>("iris.<xmlattr>.size"),
-			s.get<int>("iris.<xmlattr>.order")
-		);
-	}
+	if(s.count("pan") > 0) i.fix.pan.define(s.get_child("pan"));
+	if(s.count("tilt") > 0) i.fix.tilt.define(s.get_child("tilt"));
+	if(s.count("iris") > 0) i.fix.iris.define(s.get_child("iris"));
+	if(s.count("intensity") > 0) i.fix.intensity.define(s.get_child("intensity"));
 }
 
 void config::save(const char *name)
 {
 	boost::property_tree::xml_writer_settings<char> settings(' ', 4);
 	boost::property_tree::write_xml(name, c, std::locale(), settings);
+}
+
+void dmxproperty::define(boost::property_tree::ptree &node)
+{
+	size = 1;
+	order = 1;
+
+	boost::property_tree::ptree &attr = node.get_child("<xmlattr>");
+
+	offset = attr.get<int>("offset") - 1;
+
+	if (attr.count("size") > 0)
+		size = attr.get<int>("size");
+
+	if (attr.count("order") > 0)
+		order = attr.get<int>("order");
+
+	if (attr.count("min") > 0)
+		min = attr.get<int>("min");
+	else
+		min = (size == 1) ? 0 : -32767;
+
+	if (attr.count("max") > 0)
+		max = attr.get<int>("max");
+	else
+		max = (size == 1) ? 255 : 32767;
+
+	defined = true;
 }

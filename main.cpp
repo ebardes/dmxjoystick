@@ -32,6 +32,12 @@ void instance::runWriter()
 	while (t.tick())
 	{
 		out.copyFrom(in);
+		fix.pan.putBuffer(out);
+		fix.tilt.putBuffer(out);
+		fix.intensity.putBuffer(out);
+		fix.iris.putBuffer(out);
+
+		out.write();
 	}
 }
 

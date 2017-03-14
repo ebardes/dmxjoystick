@@ -6,6 +6,8 @@
 #include <pthread.h>
 #include <sys/timeb.h>
 #include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include "boost/property_tree/ptree.hpp"
 
@@ -36,13 +38,15 @@ class eth
 	int eth_fd;
 	int sequence;
 
+	struct sockaddr_in sin;
+
 	struct E131_2009 frame;
 public:
 	eth() : eth_fd(-1), sequence(0) {}
 	bool openRead(int universe);
 	bool openWrite(int universe);
 	bool read(void);
-	void dump(void);
+	bool write(void);
 
 	inline uint8_t* getBuffer() { return frame.dmx_data; }
 	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
@@ -53,6 +57,9 @@ class dmxproperty
 	int offset;
 	int size;
 	int order;
+
+	int min;
+	int max;
 public:
 	bool linked;
 	bool defined;
@@ -60,17 +67,13 @@ public:
 	int current;
 	int source;
 
-	void define(int offset, int size, int order)
-	{
-		this->offset = offset - 1;
-		this->size = size;
-		this->order = order;
-		this->defined = true;
-	};
+	void define(boost::property_tree::ptree &node);
+	;
 
 	int get(eth &eth);
 	void put(eth &eth, int value);
 	inline int updateSource(eth &eth) { if (defined) { source = get(eth); if (linked) current = source; }}
+	inline void putBuffer(eth &eth) { if (defined) { put(eth, current); }}
 };
 
 class display

@@ -2,6 +2,8 @@
 #include "timer.h"
 #include <curses.h>
 
+void dumpBuffer(int row, const uint8_t*buffer, int length);
+
 char *n(char *scratch, int val, int width)
 {
 	sprintf(scratch, "%*d", width, val);
@@ -54,7 +56,9 @@ void display::run(void)
 
 	while (t.tick())
 	{
-		for (int i = 0; i < instance_count; i++)
+		int i;
+
+		for (i = 0; i < instance_count; i++)
 		{
 			instance &inst = instances[i];
 
@@ -68,8 +72,45 @@ void display::run(void)
 			k = feature(i+2, k, inst.fix.iris);
 		}
 
+		// dumpBuffer(i + 3, instances[0].out.getBuffer(), 512);
+
 		mvaddstr(0,0, "");
 		refresh();
 	}
 	endwin();
 }
+
+#define WIDTH 16
+#define SPLIT 4
+
+void dumpBuffer(int row, const uint8_t*buffer, int length)
+{
+	int p = 0;
+	int i;
+	uint8_t c;
+	uint64_t offset;
+	char buff1[64];
+	char buff2[64];
+
+	buff1[0] = '\0';
+	offset = 0;
+	for (i = 0; p < length; i++)
+	{
+		c = buffer[p++];
+
+		buff2[i % WIDTH] = (c >= ' ' && c < 127) ? c : '.';
+		sprintf(buff1 + strlen(buff1), "%02X ", c);
+		if ((i % SPLIT) == SPLIT-1)
+			strcat(buff1, " ");
+		if ((i % WIDTH) == WIDTH-1)
+		{
+			buff2[WIDTH] = '\0';
+			mvprintw(row++, 0, "%012llX: %-52s|  %s\n", offset, buff1, buff2);
+			buff1[0] = '\0';
+			offset += WIDTH;
+		}
+	}
+	buff2[i % WIDTH] = '\0';
+	mvprintw(row, 0, "%012llX: %-52s|  %s\n", offset, buff1, buff2);
+}
+
