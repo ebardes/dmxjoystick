@@ -10,10 +10,13 @@ char *n(char *scratch, int val, int width)
 
 int feature(int row, int col, dmxproperty &p)
 {
+	if (!p.defined)
+		return col + 14;
+
 	char scratch[100];
-	attron(p.linked ? COLOR_PAIR(1) : COLOR_PAIR(2));
+	attron(p.linked ? COLOR_PAIR(1) : COLOR_PAIR(3));
 	mvaddstr(row, col, n(scratch, p.current, 6));
-	attroff(p.linked ? COLOR_PAIR(1) : COLOR_PAIR(2));
+	attroff(p.linked ? COLOR_PAIR(1) : COLOR_PAIR(3));
 	col += 7;
 
 	mvaddstr(row, col, n(scratch, p.source, 6));
@@ -31,13 +34,17 @@ void display::run(void)
 
 	init_pair(1, COLOR_GREEN, COLOR_BLACK);
 	init_pair(2, COLOR_RED, COLOR_BLACK);
+	init_pair(3, COLOR_YELLOW, COLOR_BLACK);
 
   mvaddstr(0, 24, "pan");
   mvaddstr(0, 38, "tilt");
   mvaddstr(0, 52, "intensity");
+  mvaddstr(0, 66, "iris");
 
 	int k = 21;
 	mvaddstr(1, 0, "--Device -------");
+	mvaddstr(1, k, "--Cur-"); k += 7;
+	mvaddstr(1, k, "--Src-"); k += 7;
 	mvaddstr(1, k, "--Cur-"); k += 7;
 	mvaddstr(1, k, "--Src-"); k += 7;
 	mvaddstr(1, k, "--Cur-"); k += 7;
@@ -58,6 +65,7 @@ void display::run(void)
 			k = feature(i+2, k, inst.fix.pan);
 			k = feature(i+2, k, inst.fix.tilt);
 			k = feature(i+2, k, inst.fix.intensity);
+			k = feature(i+2, k, inst.fix.iris);
 		}
 
 		mvaddstr(0,0, "");

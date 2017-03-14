@@ -4,7 +4,7 @@ CFLAGS=-g -MD -std=c11
 OBJS=js.o eth.o config.o main.o timer.o display.o
 
 js: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) -lpthread -lncurses -lboost_system -lboost_thread
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) -lncurses -lboost_system -lboost_thread
 
 js.o: acnraw.h
 

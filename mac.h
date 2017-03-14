@@ -5,7 +5,6 @@
 #include <string.h>
 #include <pthread.h>
 #include <sys/timeb.h>
-// #include <curses.h>
 #include <fcntl.h>
 
 #include "boost/property_tree/ptree.hpp"
@@ -45,7 +44,8 @@ public:
 	bool read(void);
 	void dump(void);
 
-	inline const uint8_t* getBuffer() { return frame.dmx_data; }
+	inline uint8_t* getBuffer() { return frame.dmx_data; }
+	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
 };
 
 class dmxproperty
@@ -55,7 +55,8 @@ class dmxproperty
 	int order;
 public:
 	bool linked;
-	dmxproperty() : linked(true) {}
+	bool defined;
+	dmxproperty() : linked(true), defined(false) {}
 	int current;
 	int source;
 
@@ -64,10 +65,12 @@ public:
 		this->offset = offset - 1;
 		this->size = size;
 		this->order = order;
+		this->defined = true;
 	};
 
 	int get(eth &eth);
-	inline int updateSource(eth &eth) { source = get(eth); if (linked) current = source; }
+	void put(eth &eth, int value);
+	inline int updateSource(eth &eth) { if (defined) { source = get(eth); if (linked) current = source; }}
 };
 
 class display

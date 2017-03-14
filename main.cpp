@@ -22,6 +22,7 @@ void instance::runReader()
 		fix.pan.updateSource(in);
 		fix.tilt.updateSource(in);
 		fix.intensity.updateSource(in);
+		fix.iris.updateSource(in);
 	}
 }
 
@@ -30,6 +31,7 @@ void instance::runWriter()
 	timer t(200);
 	while (t.tick())
 	{
+		out.copyFrom(in);
 	}
 }
 

@@ -1,5 +1,4 @@
 #include "mac.h"
-#include "acn.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 
@@ -119,4 +118,22 @@ int dmxproperty::get(eth &eth)
 	}
 
 	return value;
+}
+
+void dmxproperty::put(eth &eth, int val)
+{
+	int value = val;
+	switch(size)
+	{
+	case 2:
+		value += 32768;
+		if (order == 1)
+			value = htons(value);
+		*(int16_t*) (eth.getBuffer() + offset) = value;
+		break;
+
+	case 1:
+		(eth.getBuffer() [offset]) = (uint8_t) value;
+		break;
+	}
 }

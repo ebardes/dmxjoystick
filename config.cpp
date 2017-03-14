@@ -30,6 +30,14 @@ void config::read(const char *name)
 		s.get<int>("intensity.<xmlattr>.size"),
 		s.get<int>("intensity.<xmlattr>.order")
 	);
+	if(s.count("iris") > 0)
+	{
+		i.fix.iris.define(
+			s.get<int>("iris.<xmlattr>.offset"),
+			s.get<int>("iris.<xmlattr>.size"),
+			s.get<int>("iris.<xmlattr>.order")
+		);
+	}
 }
 
 void config::save(const char *name)
