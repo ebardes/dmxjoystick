@@ -39,8 +39,9 @@ void instance::runWriter()
 void instance::runJoystick()
 {
 	joystick.open(joystick_device.c_str());
-	while (joystick.read())
+	while (joystick.okay())
 	{
+		joystick.read();
 	}
 }
 
