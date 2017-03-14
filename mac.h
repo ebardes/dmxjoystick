@@ -76,7 +76,6 @@ public:
 	int current;
 	int source;
 
-	dmxproperty(const dmxproperty &);
 	dmxproperty() : linked(true), defined(false) {}
 	void define(boost::property_tree::ptree &node);
 

@@ -81,24 +81,6 @@ bool eth::write(void)
  ******************************************************************************
  ******************************************************************************
  */
-dmxproperty::dmxproperty(const dmxproperty &x) :
-	name(x.name),
-
-	offset(x.offset),
-	size(x.size),
-	order(x.order),
-
-	min(x.min),
-	max(x.max),
-	speed(x.speed),
-
-	defined(x.defined),
-	linked(x.linked),
-	current(x.current),
-	source(x.source)
-{
-}
-
 dmxproperty &fixture::operator[](const char*key)
 {
 	std::string name(key);
