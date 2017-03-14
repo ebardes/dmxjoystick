@@ -78,7 +78,57 @@ bool eth::write(void)
 }
 
 /*
+ ******************************************************************************
+ ******************************************************************************
  */
+dmxproperty::dmxproperty(const dmxproperty &x) :
+	name(x.name),
+
+	offset(x.offset),
+	size(x.size),
+	order(x.order),
+
+	min(x.min),
+	max(x.max),
+	speed(x.speed),
+
+	defined(x.defined),
+	linked(x.linked),
+	current(x.current),
+	source(x.source)
+{
+}
+
+dmxproperty &fixture::operator[](const char*key)
+{
+	std::string name(key);
+
+	return *properties[name];
+}
+
+/*
+ ******************************************************************************
+ * DMX Property methods
+ ******************************************************************************
+ */
+int dmxproperty::updateSource(eth &eth)
+{
+	if (defined)
+	{
+		source = get(eth);
+		if (linked)
+			current = source;
+	}
+}
+
+void dmxproperty::putBuffer(eth &eth)
+{
+	if (defined)
+	{
+		put(eth, current);
+	}
+}
+
 int dmxproperty::get(eth &eth)
 {
 	int value = 0;
@@ -95,7 +145,6 @@ int dmxproperty::get(eth &eth)
 		value = (eth.getBuffer() [offset]);
 		break;
 	}
-
 	return value;
 }
 

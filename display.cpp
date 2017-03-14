@@ -6,7 +6,7 @@ void dumpBuffer(int row, const uint8_t*buffer, int length);
 
 char *n(char *scratch, int val, int width)
 {
-	sprintf(scratch, "%*d", width, val);
+	sprintf(scratch, "%*d ", width, val);
 	return scratch;
 }
 
@@ -66,13 +66,15 @@ void display::run(void)
 			attron(inst.joystick.okay() ? COLOR_PAIR(1) : COLOR_PAIR(2));
 			mvaddstr(i+2, k, inst.joystick_device.c_str()); k += 21;
 			attroff(inst.joystick.okay() ? COLOR_PAIR(1) : COLOR_PAIR(2));
-			k = feature(i+2, k, inst.fix.pan);
-			k = feature(i+2, k, inst.fix.tilt);
-			k = feature(i+2, k, inst.fix.intensity);
-			k = feature(i+2, k, inst.fix.iris);
+
+			k = feature(i+2, k, inst.fix["pan"]);
+			k = feature(i+2, k, inst.fix["tilt"]);
+			k = feature(i+2, k, inst.fix["intensity"]);
+			k = feature(i+2, k, inst.fix["iris"]);
+			clrtoeol();
 		}
 
-		// dumpBuffer(i + 3, instances[0].out.getBuffer(), 512);
+		if (config.debug) dumpBuffer(i + 3, instances[0].out.getBuffer(), 512);
 
 		mvaddstr(0,0, "");
 		refresh();

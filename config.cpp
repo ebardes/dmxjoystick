@@ -1,38 +1,61 @@
 #include "mac.h"
 
-#include "boost/property_tree/xml_parser.hpp"
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+
+namespace pt = boost::property_tree;
+class config config;
 
 void config::read(const char *name)
 {
-	boost::property_tree::read_xml(name, c, boost::property_tree::xml_parser::trim_whitespace);
+	pt::read_xml(name, c, pt::xml_parser::trim_whitespace);
 
-	boost::property_tree::ptree &s = c.get_child("settings");
+	pt::ptree &s = c.get_child("settings");
 
 	instance &i = instances[0];
 
 	i.input_universe = s.get<int>("input_universe");
 	i.output_universe = s.get<int>("output_universe");
 
-	i.joystick_device = s.get<std::string>("joystick.device");
+	// if(s.count("pan") > 0) i.fix.pan.define(s.get_child("pan"));
+	// if(s.count("tilt") > 0) i.fix.tilt.define(s.get_child("tilt"));
+	// if(s.count("iris") > 0) i.fix.iris.define(s.get_child("iris"));
+	// if(s.count("intensity") > 0) i.fix.intensity.define(s.get_child("intensity"));
 
-	if(s.count("pan") > 0) i.fix.pan.define(s.get_child("pan"));
-	if(s.count("tilt") > 0) i.fix.tilt.define(s.get_child("tilt"));
-	if(s.count("iris") > 0) i.fix.iris.define(s.get_child("iris"));
-	if(s.count("intensity") > 0) i.fix.intensity.define(s.get_child("intensity"));
+	/*
+	 * Iteration over the dmx parameters
+	 */
+	pt::ptree &f = s.get_child("fixture");
+	BOOST_FOREACH(pt::ptree::value_type &v, f) {
+		std::string name = v.second.get<std::string>("<xmlattr>.name");
+
+		i.fix.addDefinition(name, v.second);
+	}
+
+	/*
+	 * Joystick stuff
+	 */
+	pt::ptree &j = s.get_child("joystick");
+	i.joystick_device = j.get<std::string>("device");
+
+	BOOST_FOREACH(pt::ptree::value_type &v, j.get_child("map")) {
+	//	std::cout << v.second.data() << std::endl;
+	}
 }
 
 void config::save(const char *name)
 {
-	boost::property_tree::xml_writer_settings<char> settings(' ', 4);
-	boost::property_tree::write_xml(name, c, std::locale(), settings);
+	pt::xml_writer_settings<char> settings(' ', 4);
+	pt::write_xml(name, c, std::locale(), settings);
 }
 
-void dmxproperty::define(boost::property_tree::ptree &node)
+void dmxproperty::define(pt::ptree &node)
 {
 	size = 1;
 	order = 1;
 
-	boost::property_tree::ptree &attr = node.get_child("<xmlattr>");
+	pt::ptree &attr = node.get_child("<xmlattr>");
+	name = attr.get<std::string>("name");
 
 	offset = attr.get<int>("offset") - 1;
 
@@ -54,3 +77,12 @@ void dmxproperty::define(boost::property_tree::ptree &node)
 
 	defined = true;
 }
+
+void fixture::addDefinition(std::string& name, pt::ptree &p)
+{
+	dmxproperty *x = new dmxproperty();
+	x->define(p);
+
+	properties.insert(std::pair<std::string, dmxproperty*>(name, x));
+}
+

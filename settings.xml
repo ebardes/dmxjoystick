@@ -7,12 +7,15 @@
 			 Universe Offsets start at 1
 		-->
     <input_universe>1</input_universe>
-    <output_universe>12</output_universe>
+    <output_universe>5</output_universe>
     <joystick>
         <device>/dev/input/js0</device>
+				<map type="button" action="go" number="1" />
     </joystick>
-    <pan offset="301" size="2" order="1"/>
-    <tilt offset="303" size="2" order="1"/>
-    <intensity offset="315" size="1" order="1"/>
-    <iris offset="313" size="1" order="1" min="0" max="132"/>
+		<fixture>
+				<attribute name="intensity" offset="315" size="1" order="1"/>
+				<attribute name="pan" offset="301" size="2" order="1"/>
+				<attribute name="tilt" offset="303" size="2" order="1"/>
+				<attribute name="iris" offset="313" size="1" order="1" min="0" max="132"/>
+		</fixture>
 </settings>

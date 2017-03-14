@@ -9,7 +9,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "boost/property_tree/ptree.hpp"
+#include <map>
+
+#include <boost/property_tree/ptree.hpp>
 
 #include "acn.h"
 
@@ -33,6 +35,9 @@ public:
 	bool okay();
 };
 
+/**
+ * The sACN class
+ */
 class eth
 {
 	int eth_fd;
@@ -52,45 +57,67 @@ public:
 	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
 };
 
+/**
+ * 
+ */
 class dmxproperty
 {
+	std::string name;
 	int offset;
 	int size;
 	int order;
 
 	int min;
 	int max;
+	float speed;
 public:
 	bool linked;
 	bool defined;
-	dmxproperty() : linked(true), defined(false) {}
 	int current;
 	int source;
 
+	dmxproperty(const dmxproperty &);
+	dmxproperty() : linked(true), defined(false) {}
 	void define(boost::property_tree::ptree &node);
-	;
 
 	int get(eth &eth);
 	void put(eth &eth, int value);
-	inline int updateSource(eth &eth) { if (defined) { source = get(eth); if (linked) current = source; }}
-	inline void putBuffer(eth &eth) { if (defined) { put(eth, current); }}
+	int updateSource(eth &eth);
+	void putBuffer(eth &eth);
+
+	friend std::ostream& operator << (std::ostream&, const dmxproperty &);
 };
 
+/**
+ * Display manager
+ */
 class display
 {
 public:
 	void run(void);
 };
 
+/**
+ * The fixture class
+ */
 class fixture
 {
+	std::map<std::string, dmxproperty*> properties;
 public:
-	dmxproperty pan;
-	dmxproperty tilt;
-	dmxproperty iris;
-	dmxproperty intensity;
+	void addDefinition(std::string &name, boost::property_tree::ptree &node);
+
+	dmxproperty &operator[](const char *);
+
+	void updateSource(eth &eth);
+	void putBuffer(eth &eth);
+
+	friend std::ostream& operator << (std::ostream&, const fixture &);
 };
 
+/**
+ * A control instance.
+ * Contains a DMX input, a DMX output, a fixture and a joystick.
+ */
 class instance
 {
 	void netreader();
@@ -113,11 +140,16 @@ public:
 	void runJoystick(void);
 };
 
+/**
+ * Configuration management
+ */
 class config
 {
 	boost::property_tree::ptree c;
 
 public:
+	bool debug;
+	bool xdebug;
 
 	void read(const char *name);
 	void save(const char *name);
@@ -125,3 +157,4 @@ public:
 
 extern instance instances[20];
 extern int instance_count;
+extern config config;

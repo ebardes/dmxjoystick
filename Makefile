@@ -6,7 +6,7 @@ OBJS=js.o eth.o config.o main.o timer.o display.o
 js: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) -lncurses -lboost_system -lboost_thread
 
-js.o: acnraw.h
+eth.o: acnraw.h
 
 acnraw.h: genframe
 	./genframe
