@@ -1,5 +1,4 @@
 #include "mac.h"
-#include <linux/joystick.h>
 
 js::js()
 {
@@ -26,7 +25,6 @@ void js::close()
 
 bool js::open(const char *JOY_DEV)
 {
-
 	if((joy_fd = ::open(JOY_DEV, O_RDONLY)) < 0)
 	{
 		return false;
@@ -34,9 +32,12 @@ bool js::open(const char *JOY_DEV)
 
 	::ioctl(joy_fd, JSIOCGAXES, &num_of_axis);				//	GET THE NUMBER OF AXIS ON JS
 	::ioctl(joy_fd, JSIOCGBUTTONS, &num_of_buttons);		//	GET THE NUMBER OF BUTTONS ON THE JS
-	::ioctl(joy_fd, JSIOCGNAME(80), &name_of_joystick);	//	GET THE NAME OF THE JS
+	::ioctl(joy_fd, JSIOCGNAME(sizeof(name_of_joystick)), &name_of_joystick);	//	GET THE NAME OF THE JS
+	::ioctl(joy_fd, JSIOCGCORR, &correction);	//	GET THE CORRECTION FACTOR
 
 	// ::fcntl(joy_fd, F_SETFL, O_NONBLOCK);
+	//
+	disp.message(name_of_joystick);
 
 	return true;
 }
@@ -45,16 +46,27 @@ bool js::read()
 {
 	js_event js;
 
-	::read(joy_fd, &js, sizeof(struct js_event));
+	int x = ::read(joy_fd, &js, sizeof(struct js_event));
+
+	if (js.type & JS_EVENT_INIT)
+		return true;
+
+	/*
+	std::string m = "Event: ";
+	m += std::to_string(js.value);
+	m += " ";
+	m += std::to_string(js.number);
+	disp.message(m);
+	*/
 
 	switch (js.type & ~JS_EVENT_INIT)
 	{
 		case JS_EVENT_AXIS:
-			axis   [ js.number ] = js.value;
+			analogs[js.number].map(js.value);
 			break;
 
 		case JS_EVENT_BUTTON:
-			button [ js.number ] = js.value;
+			buttons[js.number].map(js.value);
 			break;
 	}
 
@@ -64,4 +76,35 @@ bool js::read()
 bool js::okay()
 {
 	return joy_fd >= 0;
+}
+
+void analog::map(int value)
+{
+	if (!scale)
+		return;
+
+	if (value > deadmin && value < deadmax)
+	{
+		value = 0;
+	}
+	else if (value <= deadmin)
+	{
+		value = (value - deadmin) / scale;
+	}
+	else
+	{
+		value = (value - deadmax) / scale;
+	}
+
+	current = value;
+}
+
+int analog::tick()
+{
+	return current;
+}
+
+void button::map(int value)
+{
+	current = value;
 }

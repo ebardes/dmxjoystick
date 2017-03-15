@@ -41,6 +41,7 @@ bool eth::openRead(int universe)
 		return false;
 	}
 
+	this->universe = universe;
 	return true;
 }
 
@@ -56,6 +57,7 @@ bool eth::openWrite(int universe)
 	sin.sin_addr.s_addr = htonl(addr | universe);
 	sin.sin_port = htons(ACN_PORT);
 
+	this->universe = universe;
 	return true;
 }
 
@@ -72,6 +74,8 @@ bool eth::write(void)
 {
 	if (eth_fd >= 0)
 	{
+		*((uint16_t*)frame.universe) = htons(universe);
+
 		frame.seq_num[0]++;
 		sendto(eth_fd, &frame, sizeof(frame), 0, (const sockaddr*)&sin, sizeof(sin));
 	}
@@ -81,12 +85,6 @@ bool eth::write(void)
  ******************************************************************************
  ******************************************************************************
  */
-dmxproperty &fixture::operator[](const char*key)
-{
-	std::string name(key);
-
-	return *properties[name];
-}
 
 /*
  ******************************************************************************
@@ -145,5 +143,22 @@ void dmxproperty::put(eth &eth, int val)
 	case 1:
 		(eth.getBuffer() [offset]) = (uint8_t) value;
 		break;
+	}
+}
+
+void dmxproperty::updateValues()
+{
+	if (analog)
+	{
+		int n = analog->tick();
+		if (n)
+		{
+			linked = false;
+			current += n;
+			if (current < min)
+				current = min;
+			if (current > max)
+				current = max;
+		}
 	}
 }

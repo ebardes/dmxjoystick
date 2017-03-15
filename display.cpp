@@ -74,6 +74,23 @@ void display::run(void)
 			clrtoeol();
 		}
 
+		// clean up old messages
+		while (messages.size() > 40)
+		{
+			messages.pop_back();
+		}
+
+		i += 3;
+		for (std::string m : messages)
+		{
+			mvaddstr(i, 0, m.c_str());
+			clrtoeol();
+			i++;
+
+			if (i >= LINES)
+				break;
+		}
+
 		if (config.debug) dumpBuffer(i + 3, instances[0].out.getBuffer(), 512);
 
 		mvaddstr(0,0, "");

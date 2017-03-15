@@ -17,11 +17,6 @@ void config::read(const char *name)
 	i.input_universe = s.get<int>("input_universe");
 	i.output_universe = s.get<int>("output_universe");
 
-	// if(s.count("pan") > 0) i.fix.pan.define(s.get_child("pan"));
-	// if(s.count("tilt") > 0) i.fix.tilt.define(s.get_child("tilt"));
-	// if(s.count("iris") > 0) i.fix.iris.define(s.get_child("iris"));
-	// if(s.count("intensity") > 0) i.fix.intensity.define(s.get_child("intensity"));
-
 	/*
 	 * Iteration over the dmx parameters
 	 */
@@ -36,11 +31,13 @@ void config::read(const char *name)
 	 * Joystick stuff
 	 */
 	pt::ptree &j = s.get_child("joystick");
-	i.joystick_device = j.get<std::string>("device");
 
-	BOOST_FOREACH(pt::ptree::value_type &v, j.get_child("map")) {
-	//	std::cout << v.second.data() << std::endl;
+	BOOST_FOREACH(pt::ptree::value_type &v, j) {
+		if (v.first == "map")
+			i.joystick.map(i.fix, v.second);
 	}
+
+	i.joystick_device = j.get<std::string>("<xmlattr>.device");
 }
 
 void config::save(const char *name)
@@ -82,7 +79,30 @@ void fixture::addDefinition(std::string& name, pt::ptree &p)
 {
 	dmxproperty *x = new dmxproperty();
 	x->define(p);
-
 	properties.insert(std::pair<std::string, dmxproperty*>(name, x));
 }
 
+void js::map(fixture &fix, pt::ptree &node)
+{
+	pt::ptree &attr = node.get_child("<xmlattr>");
+	std::string link = attr.get<std::string>("link");
+	std::string type = attr.get<std::string>("type");
+	int number = attr.get<int>("number");
+
+	if (type == "button")
+	{
+		fix[link].button = & buttons[number];
+	}
+	if (type == "analog")
+	{
+		analog &a = analogs[number];
+
+		a.min = attr.get<int>("min");
+		a.max = attr.get<int>("max");
+		a.deadmin = attr.get<int>("deadmin");
+		a.deadmax = attr.get<int>("deadmax");
+		a.scale = attr.get<int>("scale");
+
+		fix[link].analog = &a;
+	}
+}

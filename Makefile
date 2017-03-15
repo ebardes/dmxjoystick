@@ -12,6 +12,9 @@ acnraw.h: genframe
 	./genframe
 
 clean:
-	rm -f $(OBJS) $(OBJS:.o=.d) genframe acnraw.h js
+	rm -f $(OBJS) $(OBJS:.o=.d) genframe genframe.o acnraw.h js
 
 -include *.d
+
+test: js
+	./js -x

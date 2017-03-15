@@ -8,32 +8,16 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <linux/joystick.h>
 
 #include <map>
+#include <vector>
 
 #include <boost/property_tree/ptree.hpp>
 
 #include "acn.h"
 
-class js
-{
-	int joy_fd;
-	int num_of_axis;
-	int num_of_joysticks;
-	int num_of_buttons;
-	char name_of_joystick[80];
-
-	int axis[50];
-	int button[50];
-
-public:
-	js();
-	~js();
-	bool open(const char *);
-	void close();
-	bool read();
-	bool okay();
-};
+class fixture;
 
 /**
  * The sACN class
@@ -42,6 +26,7 @@ class eth
 {
 	int eth_fd;
 	int sequence;
+	int universe;
 
 	struct sockaddr_in sin;
 
@@ -55,6 +40,48 @@ public:
 
 	inline uint8_t* getBuffer() { return frame.dmx_data; }
 	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
+};
+
+#define MAX_AXIS 20
+class analog
+{
+	int current;
+public:
+	int min, max, deadmin, deadmax;
+	int scale;
+	void map(int);
+	int tick();
+};
+
+class button
+{
+	int current;
+public:
+	void map(int);
+};
+
+class js
+{
+	int joy_fd;
+	int num_of_axis;
+	int num_of_joysticks;
+	int num_of_buttons;
+	char name_of_joystick[120];
+
+	js_corr correction[MAX_AXIS];
+
+	analog analogs[MAX_AXIS];
+	button buttons[MAX_AXIS];
+
+public:
+	js();
+	~js();
+	bool open(const char *);
+	void close();
+	bool read();
+	bool okay();
+
+	void map(fixture &fix, boost::property_tree::ptree &node);
 };
 
 /**
@@ -76,13 +103,17 @@ public:
 	int current;
 	int source;
 
-	dmxproperty() : linked(true), defined(false) {}
+	class analog *analog;
+	class button *button;
+
+	dmxproperty() : linked(true), defined(false), current(0), source(0), analog(NULL), button(NULL) {}
 	void define(boost::property_tree::ptree &node);
 
 	int get(eth &eth);
 	void put(eth &eth, int value);
 	int updateSource(eth &eth);
 	void putBuffer(eth &eth);
+	void updateValues(void);
 
 	friend std::ostream& operator << (std::ostream&, const dmxproperty &);
 };
@@ -92,8 +123,12 @@ public:
  */
 class display
 {
+	std::vector<std::string> messages;
 public:
 	void run(void);
+
+	void message(std::string msg) { messages.insert(messages.begin(), msg); }
+	void message(const char *msg) { message(std::string(msg)); }
 };
 
 /**
@@ -105,10 +140,12 @@ class fixture
 public:
 	void addDefinition(std::string &name, boost::property_tree::ptree &node);
 
-	dmxproperty &operator[](const char *);
+	inline dmxproperty &operator[](std::string name) { return *properties[name]; }
+	inline dmxproperty &operator[](const char *n) { return *properties[std::string(n)]; }
 
 	void updateSource(eth &eth);
 	void putBuffer(eth &eth);
+	void updateValues(void);
 
 	friend std::ostream& operator << (std::ostream&, const fixture &);
 };
@@ -154,6 +191,7 @@ public:
 	void save(const char *name);
 };
 
+extern display disp;
 extern instance instances[20];
 extern int instance_count;
 extern config config;

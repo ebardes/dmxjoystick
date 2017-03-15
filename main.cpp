@@ -4,12 +4,11 @@
 
 instance instances[20];
 int instance_count;
+display disp;
 
 void display_thread()
 {
-	display d;
-
-	d.run();
+	disp.run();
 	std::cout  << "Display Shutdown" << std::endl;
 }
 
@@ -30,6 +29,7 @@ void instance::runWriter()
 	while (t.tick())
 	{
 		out.copyFrom(in);
+		fix.updateValues();
 		fix.putBuffer(out);
 
 		out.write();
@@ -59,6 +59,12 @@ void fixture::putBuffer(eth &e)
 {
 	for (std::pair<std::string, dmxproperty*> p : properties)
 		p.second->putBuffer(e);
+}
+
+void fixture::updateValues()
+{
+	for (std::pair<std::string, dmxproperty*> p : properties)
+		p.second->updateValues();
 }
 
 void fixture::updateSource(eth &e)
