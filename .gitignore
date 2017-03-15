@@ -4,3 +4,5 @@ js
 genframe
 acnraw.h
 *.d
+README.html
+node_modules

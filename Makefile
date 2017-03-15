@@ -5,7 +5,7 @@ CFLAGS=-g -MD -std=c11
 
 OBJS=js.o eth.o config.o main.o timer.o display.o
 
-LIBS= -lboost_system -lboost_thread 
+LIBS= -lboost_system -lboost_thread
 
 ifeq ($(UNAME_S),SunOS)
 LIBS += -lcurses -lsocket
@@ -30,3 +30,8 @@ clean:
 
 test: js
 	./js -x
+
+docs: README.html
+
+README.html: README.md
+	./node_modules/markdown-it/bin/markdown-it.js README.md  > README.html
