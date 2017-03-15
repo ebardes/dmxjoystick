@@ -35,7 +35,7 @@ class eth
 
 	bool ethCommon(void);
 public:
-	eth() : sequence(0) {}
+	eth();
 	bool openRead(int universe);
 	bool openWrite(int universe);
 	bool read(void);

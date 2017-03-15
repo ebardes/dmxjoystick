@@ -10,6 +10,12 @@ int eth_fd = -1;
 
 static uint32_t addr = (239 << 24) | (255 << 16); // ACN Ethernet address 239.255.x.x
 
+eth::eth()
+{
+	sequence = 0;
+	memcpy((void*)&frame, (const void*)raw_acn_packet, sizeof(frame));
+}
+
 bool eth::ethCommon(void)
 {
 	if (eth_fd < 0)
@@ -95,6 +101,7 @@ bool eth::write(void)
 	{
 		*((uint16_t*)frame.universe) = htons(universe);
 		frame.seq_num[0]++;
+		frame.priority[0] = (uint8_t) 100;
 
 		int nbytes = sendto(eth_fd, &frame, sizeof(frame), 0, (const sockaddr*)&sin, sizeof(sin));
 		if (nbytes < 0)
