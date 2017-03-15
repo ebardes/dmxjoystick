@@ -1,5 +1,6 @@
 #include "mac.h"
 
+#ifdef __linux__
 js::js()
 {
 	memset(this, 0, sizeof(*this));
@@ -33,10 +34,7 @@ bool js::open(const char *JOY_DEV)
 	::ioctl(joy_fd, JSIOCGAXES, &num_of_axis);				//	GET THE NUMBER OF AXIS ON JS
 	::ioctl(joy_fd, JSIOCGBUTTONS, &num_of_buttons);		//	GET THE NUMBER OF BUTTONS ON THE JS
 	::ioctl(joy_fd, JSIOCGNAME(sizeof(name_of_joystick)), &name_of_joystick);	//	GET THE NAME OF THE JS
-	::ioctl(joy_fd, JSIOCGCORR, &correction);	//	GET THE CORRECTION FACTOR
 
-	// ::fcntl(joy_fd, F_SETFL, O_NONBLOCK);
-	//
 	disp.message(name_of_joystick);
 
 	return true;
@@ -108,3 +106,14 @@ void button::map(int value)
 {
 	current = value;
 }
+
+#endif
+#ifdef __sun
+js::js() {}
+js::~js() {}
+bool js::open(const char *def) { return true; }
+bool js::read() { return false; }
+bool js::okay() { return false; }
+int analog::tick() { return false; }
+#endif
+

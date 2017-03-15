@@ -8,7 +8,10 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+#ifdef __linux__
 #include <linux/joystick.h>
+#endif
 
 #include <map>
 #include <vector>
@@ -24,15 +27,15 @@ class fixture;
  */
 class eth
 {
-	int eth_fd;
 	int sequence;
 	int universe;
 
 	struct sockaddr_in sin;
-
 	struct E131_2009 frame;
+
+	bool ethCommon(void);
 public:
-	eth() : eth_fd(-1), sequence(0) {}
+	eth() : sequence(0) {}
 	bool openRead(int universe);
 	bool openWrite(int universe);
 	bool read(void);
@@ -67,8 +70,6 @@ class js
 	int num_of_joysticks;
 	int num_of_buttons;
 	char name_of_joystick[120];
-
-	js_corr correction[MAX_AXIS];
 
 	analog analogs[MAX_AXIS];
 	button buttons[MAX_AXIS];

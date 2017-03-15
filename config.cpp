@@ -40,11 +40,13 @@ void config::read(const char *name)
 	i.joystick_device = j.get<std::string>("<xmlattr>.device");
 }
 
+/*
 void config::save(const char *name)
 {
 	pt::xml_writer_settings<char> settings(' ', 4);
 	pt::write_xml(name, c, std::locale(), settings);
 }
+*/
 
 void dmxproperty::define(pt::ptree &node)
 {

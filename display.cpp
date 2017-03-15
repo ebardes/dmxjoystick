@@ -64,7 +64,7 @@ void display::run(void)
 
 			k = 0;
 			attron(inst.joystick.okay() ? COLOR_PAIR(1) : COLOR_PAIR(2));
-			mvaddstr(i+2, k, inst.joystick_device.c_str()); k += 21;
+			mvaddstr(i+2, k, (char*) inst.joystick_device.c_str()); k += 21;
 			attroff(inst.joystick.okay() ? COLOR_PAIR(1) : COLOR_PAIR(2));
 
 			k = feature(i+2, k, inst.fix["pan"]);
@@ -83,7 +83,7 @@ void display::run(void)
 		i += 3;
 		for (std::string m : messages)
 		{
-			mvaddstr(i, 0, m.c_str());
+			mvaddstr(i, 0, (char*) m.c_str());
 			clrtoeol();
 			i++;
 
