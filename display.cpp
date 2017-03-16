@@ -29,7 +29,7 @@ int feature(int row, int col, dmxproperty &p)
 
 void display::run(void)
 {
-	timer t(50);
+	timer t(100);
 
 	initscr();
 	start_color();

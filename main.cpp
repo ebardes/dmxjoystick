@@ -25,7 +25,7 @@ void instance::runReader()
 
 void instance::runWriter()
 {
-	timer t(200);
+	timer t(20);
 	while (t.tick())
 	{
 		out.copyFrom(in);
