@@ -76,6 +76,12 @@ void fixture::updateSource(eth &e)
 		p.second->updateSource(e);
 }
 
+fixture::~fixture()
+{
+	for (std::pair<std::string, dmxproperty*> p : properties)
+		delete p.second;
+}
+
 std::ostream& operator << (std::ostream& os, const dmxproperty& p)
 {
 	os << p.name << ":{off:" << (p.offset+1) << ",size:" << p.size << ",cur:" << p.current << ",src:" << p.source << ",defined:" << p.defined << "}";

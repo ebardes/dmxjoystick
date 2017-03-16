@@ -1,7 +1,8 @@
 UNAME_S := $(shell uname -s)
 
-CXXFLAGS=-g -MD -std=c++11
-CFLAGS=-g -MD -std=c11
+OPTIMIZE=-O3
+CXXFLAGS=-g ${OPTIMIZE} -MD -std=c++11 -Wall
+CFLAGS=-g -MD -std=c11 -Wall
 
 OBJS=js.o eth.o config.o main.o timer.o display.o
 

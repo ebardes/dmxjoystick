@@ -49,14 +49,6 @@ bool js::read()
 	if (js.type & JS_EVENT_INIT)
 		return true;
 
-	/*
-	std::string m = "Event: ";
-	m += std::to_string(js.value);
-	m += " ";
-	m += std::to_string(js.number);
-	disp.message(m);
-	*/
-
 	switch (js.type & ~JS_EVENT_INIT)
 	{
 		case JS_EVENT_AXIS:
@@ -68,7 +60,7 @@ bool js::read()
 			break;
 	}
 
-	return true;
+	return x > 0;
 }
 
 bool js::okay()

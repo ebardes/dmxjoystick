@@ -57,6 +57,6 @@ int main()
   
   fclose(fp);
 
-  printf("size: %d\n", sizeof(packet));
+  printf("size: %d\n", (int) sizeof(packet));
   return 0;
 }

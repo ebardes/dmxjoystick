@@ -16,14 +16,14 @@ eth::eth()
 	memcpy((void*)&frame, (const void*)raw_acn_packet, sizeof(frame));
 }
 
-bool eth::ethCommon(void)
+void eth::ethCommon(void)
 {
 	if (eth_fd < 0)
 	{
 		if ((eth_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 		{
 			perror("cannot create socket");
-			return false;
+			return;
 		}
 
 		memset((char *)&sin, 0, sizeof(sin));
@@ -34,7 +34,7 @@ bool eth::ethCommon(void)
 		if (bind(eth_fd, (struct sockaddr *) &sin, sizeof(sin)) < 0)
 		{
 			perror("bind error");
-			return false;
+			return;
 		}
 	}
 }
@@ -93,13 +93,16 @@ bool eth::read(void)
 
 		disp.message(m);
 	}
+
+	return nbytes > 0;
 }
 
 bool eth::write(void)
 {
 	if (eth_fd >= 0)
 	{
-		*((uint16_t*)frame.universe) = htons(universe);
+		frame.universe[0] = (universe >> 8);
+		frame.universe[1] = (universe & 0xff);
 		frame.seq_num[0]++;
 		frame.priority[0] = (uint8_t) 100;
 
@@ -115,7 +118,9 @@ bool eth::write(void)
 
 			disp.message(m);
 		}
+	return nbytes > 0;
 	}
+	return false;
 }
 
 /*
@@ -128,7 +133,7 @@ bool eth::write(void)
  * DMX Property methods
  ******************************************************************************
  */
-int dmxproperty::updateSource(eth &eth)
+void dmxproperty::updateSource(eth &eth)
 {
 	if (defined)
 	{

@@ -33,7 +33,7 @@ class eth
 	struct sockaddr_in sin;
 	struct E131_2009 frame;
 
-	bool ethCommon(void);
+	void ethCommon(void);
 public:
 	eth();
 	bool openRead(int universe);
@@ -43,6 +43,10 @@ public:
 
 	inline uint8_t* getBuffer() { return frame.dmx_data; }
 	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
+};
+
+class action
+{
 };
 
 #define MAX_AXIS 20
@@ -59,7 +63,9 @@ public:
 class button
 {
 	int current;
+	action *act;
 public:
+	button() : act(NULL) {}
 	void map(int);
 };
 
@@ -112,7 +118,7 @@ public:
 
 	int get(eth &eth);
 	void put(eth &eth, int value);
-	int updateSource(eth &eth);
+	void updateSource(eth &eth);
 	void putBuffer(eth &eth);
 	void updateValues(void);
 
@@ -139,10 +145,13 @@ class fixture
 {
 	std::map<std::string, dmxproperty*> properties;
 public:
+	~fixture();
 	void addDefinition(std::string &name, boost::property_tree::ptree &node);
 
 	inline dmxproperty &operator[](std::string name) { return *properties[name]; }
 	inline dmxproperty &operator[](const char *n) { return *properties[std::string(n)]; }
+
+	inline bool has(std::string name) { return properties.count(name) > 0; }
 
 	void updateSource(eth &eth);
 	void putBuffer(eth &eth);

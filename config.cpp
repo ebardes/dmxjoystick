@@ -86,15 +86,30 @@ void fixture::addDefinition(std::string& name, pt::ptree &p)
 
 void js::map(fixture &fix, pt::ptree &node)
 {
+	std::string link;
+	std::string action;
 	pt::ptree &attr = node.get_child("<xmlattr>");
-	std::string link = attr.get<std::string>("link");
+
+	if (attr.count("link") > 0)
+		link = attr.get<std::string>("link");
+	if (attr.count("action") > 0)
+		action = attr.get<std::string>("action");
+
 	std::string type = attr.get<std::string>("type");
 	int number = attr.get<int>("number");
 
 	if (type == "button")
 	{
-		fix[link].button = & buttons[number];
+		if (link != "" && fix.has(link))
+		{
+			fix[link].button = & buttons[number];
+		}
+
+		if (action != "")
+		{
+		}
 	}
+
 	if (type == "analog")
 	{
 		analog &a = analogs[number];
@@ -105,6 +120,7 @@ void js::map(fixture &fix, pt::ptree &node)
 		a.deadmax = attr.get<int>("deadmax");
 		a.scale = attr.get<int>("scale");
 
-		fix[link].analog = &a;
+		if (link != "" && fix.has(link))
+			fix[link].analog = &a;
 	}
 }
