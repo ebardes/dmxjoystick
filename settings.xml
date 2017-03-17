@@ -16,9 +16,10 @@
 				<map type="button" action="release" number="1" />
     </joystick>
 		<fixture address="301">
-				<attribute name="intensity" offset="15" size="1" order="1"/>
-				<attribute name="pan" offset="1" size="2" order="1"/>
-				<attribute name="tilt" offset="3" size="2" order="1"/>
-				<attribute name="iris" offset="13" size="1" order="1" min="0" max="132"/>
+				<parameter name="pan" offset="1" size="2" order="1"/>
+				<parameter name="tilt" offset="3" size="2" order="1"/>
+				<parameter name="iris" offset="13" size="1" order="1" min="0" max="132"/>
+				<parameter name="color" offset="6" size="1" order="1" min="0" max="127"/>
+				<parameter name="intensity" offset="15" size="1" order="1"/>
 		</fixture>
 </settings>

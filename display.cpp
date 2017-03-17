@@ -10,19 +10,19 @@ char *n(char *scratch, int val, int width)
 	return scratch;
 }
 
-int feature(int row, int col, dmxproperty &p)
+int feature(int row, int col, dmxproperty *p)
 {
-	if (!p.defined)
-		return col + 14;
+	if (p == NULL || !p->defined)
+		return col + 15;
 
 	char scratch[100];
-	attron(p.linked ? COLOR_PAIR(1) : COLOR_PAIR(3));
-	mvaddstr(row, col, n(scratch, p.current, 6));
-	attroff(p.linked ? COLOR_PAIR(1) : COLOR_PAIR(3));
+	attron(p->linked ? COLOR_PAIR(1) : COLOR_PAIR(3));
+	mvaddstr(row, col, n(scratch, p->current, 6));
+	attroff(p->linked ? COLOR_PAIR(1) : COLOR_PAIR(3));
 	col += 7;
 
-	mvaddstr(row, col, n(scratch, p.source, 6));
-	col += 7;
+	mvaddstr(row, col, n(scratch, p->source, 6));
+	col += 8;
 
 	return col;
 }
@@ -38,21 +38,26 @@ void display::run(void)
 	init_pair(2, COLOR_RED, COLOR_BLACK);
 	init_pair(3, COLOR_YELLOW, COLOR_BLACK);
 
-  mvaddstr(0, 24, "pan");
-  mvaddstr(0, 38, "tilt");
-  mvaddstr(0, 52, "intensity");
-  mvaddstr(0, 66, "iris");
+	mvaddstr(1, 0, "--Device -------");
+
+	std::vector<std::string> names;
+	for (int i = 0; i < instance_count; i++)
+	{
+		instance &inst = instances[i];
+		for (std::pair<std::string, dmxproperty*> p : inst.fix.properties)
+		{
+			names.push_back(p.first);
+		}
+	}
 
 	int k = 21;
-	mvaddstr(1, 0, "--Device -------");
-	mvaddstr(1, k, "--Cur-"); k += 7;
-	mvaddstr(1, k, "--Src-"); k += 7;
-	mvaddstr(1, k, "--Cur-"); k += 7;
-	mvaddstr(1, k, "--Src-"); k += 7;
-	mvaddstr(1, k, "--Cur-"); k += 7;
-	mvaddstr(1, k, "--Src-"); k += 7;
-	mvaddstr(1, k, "--Cur-"); k += 7;
-	mvaddstr(1, k, "--Src-"); k += 7;
+	for (std::string name : names)
+	{
+		mvaddstr(0, k + 3, name.c_str());
+
+		mvaddstr(1, k, "--Cur-"); k += 7;
+		mvaddstr(1, k, "--Src-"); k += 8;
+	}
 
 	while (t.tick())
 	{
@@ -67,10 +72,10 @@ void display::run(void)
 			mvaddstr(i+2, k, (char*) inst.joystick_device.c_str()); k += 21;
 			attroff(inst.joystick.okay() ? COLOR_PAIR(1) : COLOR_PAIR(2));
 
-			k = feature(i+2, k, inst.fix["pan"]);
-			k = feature(i+2, k, inst.fix["tilt"]);
-			k = feature(i+2, k, inst.fix["intensity"]);
-			k = feature(i+2, k, inst.fix["iris"]);
+			for (std::string name : names)
+			{
+				k = feature(i+2, k, inst.fix[name]);
+			}
 			clrtoeol();
 		}
 

@@ -23,9 +23,11 @@ void config::read(const char *name)
 	pt::ptree &f = s.get_child("fixture");
 	int address = f.get<int>("<xmlattr>.address") - 1;
 	BOOST_FOREACH(pt::ptree::value_type &v, f) {
-		std::string name = v.second.get<std::string>("<xmlattr>.name");
-
-		i.fix.addDefinition(name, v.second, address);
+		if (v.first == "parameter")
+		{
+			std::string name = v.second.get<std::string>("<xmlattr>.name");
+			i.fix.addDefinition(name, v.second, address);
+		}
 	}
 
 	/*
@@ -107,7 +109,7 @@ void js::map(fixture &fix, pt::ptree &node)
 	{
 		if (link != "" && fix.has(link))
 		{
-			fix[link].button = & buttons[number];
+			fix[link]->button = & buttons[number];
 		}
 
 		if (action != "")
@@ -126,6 +128,6 @@ void js::map(fixture &fix, pt::ptree &node)
 		a.scale = attr.get<int>("scale");
 
 		if (link != "" && fix.has(link))
-			fix[link].analog = &a;
+			fix[link]->analog = &a;
 	}
 }

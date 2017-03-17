@@ -163,13 +163,14 @@ public:
  */
 class fixture
 {
-	std::map<std::string, dmxproperty*> properties;
 public:
+	std::map<std::string, dmxproperty*> properties;
+
 	~fixture();
 	void addDefinition(std::string &name, boost::property_tree::ptree &node, int baseAddress);
 
-	inline dmxproperty &operator[](std::string name) { return *properties[name]; }
-	inline dmxproperty &operator[](const char *n) { return *properties[std::string(n)]; }
+	inline dmxproperty *operator[](std::string name) { return properties[name]; }
+	inline dmxproperty *operator[](const char *n) { return properties[std::string(n)]; }
 
 	inline bool has(std::string name) { return properties.count(name) > 0; }
 
