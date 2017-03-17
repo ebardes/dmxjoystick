@@ -21,10 +21,11 @@ void config::read(const char *name)
 	 * Iteration over the dmx parameters
 	 */
 	pt::ptree &f = s.get_child("fixture");
+	int address = f.get<int>("<xmlattr>.address") - 1;
 	BOOST_FOREACH(pt::ptree::value_type &v, f) {
 		std::string name = v.second.get<std::string>("<xmlattr>.name");
 
-		i.fix.addDefinition(name, v.second);
+		i.fix.addDefinition(name, v.second, address);
 	}
 
 	/*
@@ -48,18 +49,22 @@ void config::save(const char *name)
 }
 */
 
-void dmxproperty::define(pt::ptree &node)
+void dmxproperty::define(pt::ptree &node, int baseAddress)
 {
 	size = 1;
 	order = 1;
+	fadetime = 50;
 
 	pt::ptree &attr = node.get_child("<xmlattr>");
 	name = attr.get<std::string>("name");
 
-	offset = attr.get<int>("offset") - 1;
+	offset = baseAddress + attr.get<int>("offset") - 1;
 
 	if (attr.count("size") > 0)
 		size = attr.get<int>("size");
+
+	if (attr.count("fade") > 0)
+		fadetime = attr.get<int>("fade");
 
 	if (attr.count("order") > 0)
 		order = attr.get<int>("order");
@@ -77,10 +82,10 @@ void dmxproperty::define(pt::ptree &node)
 	defined = true;
 }
 
-void fixture::addDefinition(std::string& name, pt::ptree &p)
+void fixture::addDefinition(std::string& name, pt::ptree &p, int baseAddress)
 {
 	dmxproperty *x = new dmxproperty();
-	x->define(p);
+	x->define(p, baseAddress);
 	properties.insert(std::pair<std::string, dmxproperty*>(name, x));
 }
 

@@ -15,11 +15,10 @@
 				<map type="analog" link="iris" number="0" min="-32767" max="32767" deadmin="-3000" deadmax="3000" scale="6000" />
 				<map type="button" action="release" number="1" />
     </joystick>
-		<fixture>
-				<attribute name="intensity" offset="315" size="1" order="1"/>
-				<attribute name="pan" offset="301" size="2" order="1"/>
-				<attribute name="tilt" offset="303" size="2" order="1"/>
-				<attribute name="iris" offset="313" size="1" order="1" min="0" max="132"/>
-				<attribute name="go" offset="511" size="1" order="1" min="0" max="255"/>
+		<fixture address="301">
+				<attribute name="intensity" offset="15" size="1" order="1"/>
+				<attribute name="pan" offset="1" size="2" order="1"/>
+				<attribute name="tilt" offset="3" size="2" order="1"/>
+				<attribute name="iris" offset="13" size="1" order="1" min="0" max="132"/>
 		</fixture>
 </settings>

@@ -118,7 +118,7 @@ bool eth::write(void)
 
 			disp.message(m);
 		}
-	return nbytes > 0;
+		return nbytes > 0;
 	}
 	return false;
 }
@@ -137,9 +137,17 @@ void dmxproperty::updateSource(eth &eth)
 {
 	if (defined)
 	{
-		source = get(eth);
+		int x = get(eth);
 		if (linked)
-			current = source;
+		{
+			current = x;
+		}
+		else if (fader.running())
+		{
+			if (source != x) // the console changed the target value
+				release(); // recalculate the fade
+		}
+		source = x;
 	}
 }
 
@@ -203,4 +211,10 @@ void dmxproperty::updateValues()
 				current = max;
 		}
 	}
+}
+
+void dmxproperty::release(void)
+{
+	if (fader.target != source)
+		fader.init(current, fadetime, source);
 }

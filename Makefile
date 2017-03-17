@@ -1,16 +1,18 @@
 UNAME_S := $(shell uname -s)
 
 OPTIMIZE=-O3
-CXXFLAGS=-g ${OPTIMIZE} -MD -std=c++11 -Wall
-CFLAGS=-g -MD -std=c11 -Wall
+CXXFLAGS=-g ${OPTIMIZE} -MMD -std=c++11 -Wall
+CFLAGS=-g -MMD -std=c11 -Wall
 
-OBJS=js.o eth.o config.o main.o timer.o display.o
+OBJS=js.o eth.o config.o main.o timer.o display.o bres.o
 
 LIBS= -lboost_system -lboost_thread
 
 ifeq ($(UNAME_S),SunOS)
 LIBS += -lcurses -lsocket
 CXXFLAGS += -pthreads
+CXX=g++
+CC=gcc
 endif
 ifeq ($(UNAME_S),Linux)
 LIBS += -lncurses

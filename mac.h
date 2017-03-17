@@ -91,6 +91,22 @@ public:
 	void map(fixture &fix, boost::property_tree::ptree &node);
 };
 
+class fade
+{
+	int *points;
+	int npoints;
+	int p;
+	bool fading;
+public:
+	int target;
+	int start;
+	fade() : points(NULL), npoints(0), fading(false), target(0) {};
+	~fade();
+	void init(int y1, int time, int y2);
+	int tick(void) { if (p < npoints) { return points[p++]; } else { fading = false; return target; }}
+	bool running() { return fading; }
+};
+
 /**
  * 
  */
@@ -103,7 +119,9 @@ class dmxproperty
 
 	int min;
 	int max;
+	int fadetime;
 	float speed;
+	fade fader;
 public:
 	bool linked;
 	bool defined;
@@ -114,13 +132,15 @@ public:
 	class button *button;
 
 	dmxproperty() : linked(true), defined(false), current(0), source(0), analog(NULL), button(NULL) {}
-	void define(boost::property_tree::ptree &node);
+	void define(boost::property_tree::ptree &node, int baseAddress = 0);
 
 	int get(eth &eth);
 	void put(eth &eth, int value);
 	void updateSource(eth &eth);
 	void putBuffer(eth &eth);
 	void updateValues(void);
+	void fadeTo(int value, int time);
+	void release();
 
 	friend std::ostream& operator << (std::ostream&, const dmxproperty &);
 };
@@ -146,7 +166,7 @@ class fixture
 	std::map<std::string, dmxproperty*> properties;
 public:
 	~fixture();
-	void addDefinition(std::string &name, boost::property_tree::ptree &node);
+	void addDefinition(std::string &name, boost::property_tree::ptree &node, int baseAddress);
 
 	inline dmxproperty &operator[](std::string name) { return *properties[name]; }
 	inline dmxproperty &operator[](const char *n) { return *properties[std::string(n)]; }
