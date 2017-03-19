@@ -198,6 +198,13 @@ void dmxproperty::put(eth &eth, int val)
 
 void dmxproperty::updateValues()
 {
+	if (fader.running())
+	{
+		current = fader.tick();
+		if (current == source)
+			linked = true;
+	}
+
 	if (analog)
 	{
 		int n = analog->tick();
@@ -215,6 +222,6 @@ void dmxproperty::updateValues()
 
 void dmxproperty::release(void)
 {
-	if (fader.target != source)
+	if (!linked && current != source)
 		fader.init(current, fadetime, source);
 }

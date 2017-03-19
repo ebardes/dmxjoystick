@@ -61,6 +61,12 @@ void fixture::putBuffer(eth &e)
 		p.second->putBuffer(e);
 }
 
+void fixture::release()
+{
+	for (std::pair<std::string, dmxproperty*> p : properties)
+		p.second->release();
+}
+
 void fixture::updateValues()
 {
 	for (std::pair<std::string, dmxproperty*> p : properties)

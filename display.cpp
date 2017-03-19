@@ -4,6 +4,8 @@
 
 void dumpBuffer(int row, const uint8_t*buffer, int length);
 
+WINDOW *w;
+
 char *n(char *scratch, int val, int width)
 {
 	sprintf(scratch, "%*d ", width, val);
@@ -27,11 +29,31 @@ int feature(int row, int col, dmxproperty *p)
 	return col;
 }
 
+void display::runKeyboard()
+{
+	int ch = getch();
+	switch (ch)
+	{
+	case 'q':
+		quit = true;
+		break;
+
+	case 'r':
+		message("release");
+		instances[0].release();
+		break;
+	}
+}
+
+
 void display::run(void)
 {
+	quit = false;
 	timer t(100);
 
-	initscr();
+	w = initscr();
+	cbreak();
+	nodelay(w, TRUE);
 	start_color();
 
 	init_pair(1, COLOR_GREEN, COLOR_BLACK);
@@ -59,9 +81,13 @@ void display::run(void)
 		mvaddstr(1, k, "--Src-"); k += 8;
 	}
 
-	while (t.tick())
+	while (!quit && t.tick())
 	{
-		int i;
+		int i = 0;
+		while (::ioctl(0, FIONREAD, &i) >= 0 && i > 0)
+		{
+			runKeyboard();
+		}
 
 		for (i = 0; i < instance_count; i++)
 		{

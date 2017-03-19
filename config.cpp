@@ -55,7 +55,7 @@ void dmxproperty::define(pt::ptree &node, int baseAddress)
 {
 	size = 1;
 	order = 1;
-	fadetime = 50;
+	fadetime = 500;
 
 	pt::ptree &attr = node.get_child("<xmlattr>");
 	name = attr.get<std::string>("name");

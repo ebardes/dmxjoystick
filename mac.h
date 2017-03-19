@@ -103,7 +103,7 @@ public:
 	fade() : points(NULL), npoints(0), fading(false), target(0) {};
 	~fade();
 	void init(int y1, int time, int y2);
-	int tick(void) { if (p < npoints) { return points[p++]; } else { fading = false; return target; }}
+	int tick(void);
 	bool running() { return fading; }
 };
 
@@ -151,11 +151,14 @@ public:
 class display
 {
 	std::vector<std::string> messages;
+	bool quit;
 public:
 	void run(void);
 
 	void message(std::string msg) { messages.insert(messages.begin(), msg); }
 	void message(const char *msg) { message(std::string(msg)); }
+
+	void runKeyboard(void);
 };
 
 /**
@@ -177,6 +180,7 @@ public:
 	void updateSource(eth &eth);
 	void putBuffer(eth &eth);
 	void updateValues(void);
+	void release(void);
 
 	friend std::ostream& operator << (std::ostream&, const fixture &);
 };
@@ -205,6 +209,8 @@ public:
 	void runReader(void);
 	void runWriter(void);
 	void runJoystick(void);
+
+	void release(void) { fix.release(); }
 };
 
 /**

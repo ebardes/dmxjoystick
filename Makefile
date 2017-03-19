@@ -1,6 +1,6 @@
 UNAME_S := $(shell uname -s)
 
-OPTIMIZE=-O3
+OPTIMIZE=-O3 -march=native -fno-strict-aliasing
 CXXFLAGS=-g ${OPTIMIZE} -MMD -std=c++11 -Wall
 CFLAGS=-g -MMD -std=c11 -Wall
 

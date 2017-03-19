@@ -16,7 +16,6 @@ void fade::init(int y1,int x2,int y2)
 	const int x1 = 0;
 	int x,y,dx,dy,dx1,dy1,px,py,xe,ye,i;
 
-
 	target = y2;
 
 	dx=x2-x1;
@@ -30,8 +29,9 @@ void fade::init(int y1,int x2,int y2)
 	{
 		if (points)
 			delete[] points;
-		points = new int[dx1];
+		points = (dx1 > 0) ? new int[dx1 + 1] : NULL;
 		npoints = dx1;
+		fading = true;
 	}
 
 	if(dy1<=dx1)
@@ -114,4 +114,17 @@ fade::~fade()
 {
 	if (points)
 		delete[] points;
+}
+
+int fade::tick(void)
+{
+	if (p < npoints)
+	{
+		return points[p++];
+	}
+	else
+	{
+		fading = false;
+		return target;
+	}
 }
