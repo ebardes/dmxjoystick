@@ -31,7 +31,6 @@ void fade::init(int y1,int x2,int y2)
 			delete[] points;
 		points = (dx1 > 0) ? new int[dx1 + 1] : NULL;
 		npoints = dx1;
-		fading = true;
 	}
 
 	if(dy1<=dx1)
@@ -108,6 +107,7 @@ void fade::init(int y1,int x2,int y2)
 			points[x] = y;
 		}
 	}
+	fading = true;
 }
 
 fade::~fade()

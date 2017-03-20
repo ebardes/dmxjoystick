@@ -202,7 +202,10 @@ void dmxproperty::updateValues()
 	{
 		current = fader.tick();
 		if (current == source)
+		{
 			linked = true;
+			fader.stop();
+		}
 	}
 
 	if (analog)
@@ -210,6 +213,7 @@ void dmxproperty::updateValues()
 		int n = analog->tick();
 		if (n)
 		{
+			fader.stop();
 			linked = false;
 			current += n;
 			if (current < min)

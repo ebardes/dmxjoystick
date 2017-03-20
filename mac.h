@@ -105,6 +105,7 @@ public:
 	void init(int y1, int time, int y2);
 	int tick(void);
 	bool running() { return fading; }
+	void stop(void) { fading = false; p = start = target = 0; }
 };
 
 /**
@@ -169,6 +170,7 @@ class fixture
 public:
 	std::map<std::string, dmxproperty*> properties;
 
+	fixture() { release(); }
 	~fixture();
 	void addDefinition(std::string &name, boost::property_tree::ptree &node, int baseAddress);
 
