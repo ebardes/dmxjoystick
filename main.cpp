@@ -28,6 +28,8 @@ void instance::runWriter()
 	timer t(20);
 	while (t.tick())
 	{
+		if (releaseButton->pushed())
+			release();
 		out.copyFrom(in);
 		fix.updateValues();
 		fix.putBuffer(out);

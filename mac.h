@@ -20,6 +20,7 @@
 
 #include "acn.h"
 
+class instance;
 class fixture;
 
 /**
@@ -63,10 +64,9 @@ public:
 class button
 {
 	int current;
-	action *act;
 public:
-	button() : act(NULL) {}
 	void map(int);
+	bool pushed() { if (current > 0) { current = 0; return true;  } else { return false; }}
 };
 
 class js
@@ -88,7 +88,7 @@ public:
 	bool read();
 	bool okay();
 
-	void map(fixture &fix, boost::property_tree::ptree &node);
+	void map(instance &inst, fixture &fix, boost::property_tree::ptree &node);
 };
 
 class fade
@@ -205,6 +205,8 @@ public:
 	eth in;
 	eth out;
 	fixture fix;
+
+	button *releaseButton;
 
 	void init(void);
 

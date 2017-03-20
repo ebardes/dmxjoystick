@@ -37,7 +37,7 @@ void config::read(const char *name)
 
 	BOOST_FOREACH(pt::ptree::value_type &v, j) {
 		if (v.first == "map")
-			i.joystick.map(i.fix, v.second);
+			i.joystick.map(i, i.fix, v.second);
 	}
 
 	i.joystick_device = j.get<std::string>("<xmlattr>.device");
@@ -55,7 +55,7 @@ void dmxproperty::define(pt::ptree &node, int baseAddress)
 {
 	size = 1;
 	order = 1;
-	fadetime = 100;
+	fadetime = 200;
 
 	pt::ptree &attr = node.get_child("<xmlattr>");
 	name = attr.get<std::string>("name");
@@ -91,7 +91,7 @@ void fixture::addDefinition(std::string& name, pt::ptree &p, int baseAddress)
 	properties.insert(std::pair<std::string, dmxproperty*>(name, x));
 }
 
-void js::map(fixture &fix, pt::ptree &node)
+void js::map(instance &inst, fixture &fix, pt::ptree &node)
 {
 	std::string link;
 	std::string action;
@@ -112,8 +112,9 @@ void js::map(fixture &fix, pt::ptree &node)
 			fix[link]->button = & buttons[number];
 		}
 
-		if (action != "")
+		if (action == "release")
 		{
+			inst.releaseButton = & buttons[number];
 		}
 	}
 
