@@ -17,7 +17,7 @@ This project makes the following assumptions about the working environment.
 On Debian (and probably Ubuntu)
 
 ```
-$ sudo apt-get install libncurses5-dev libboost-thread-dev build-essential joystick
+$ sudo apt-get install libncurses5-dev libboost-thread-dev build-essential joystick libola-dev pkg-config
 ```
 
 This is a coarse set of installation terms. You might be able to select finer grained installation targets to scale that back a bit.

@@ -18,6 +18,7 @@ ifeq ($(UNAME_S),Linux)
 LIBS += -lncurses
 endif
 
+all: js olatest
 js: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LIBS)
 
@@ -27,7 +28,7 @@ acnraw.h: genframe
 	./genframe
 
 clean:
-	rm -f $(OBJS) $(OBJS:.o=.d) genframe genframe.o genframe.d acnraw.h js
+	rm -f $(OBJS) $(OBJS:.o=.d) genframe genframe.o genframe.d acnraw.h js olatest ola.o
 
 -include *.d
 
@@ -38,3 +39,6 @@ docs: README.html
 
 README.html: README.md
 	./node_modules/markdown-it/bin/markdown-it.js README.md  > README.html
+
+olatest: ola.o
+	$(CXX) $(CXXFLAGS) -o $@ ola.o $$(pkg-config --cflags --libs libola)

@@ -6,6 +6,8 @@ const uint8_t raw_acn_packet[sizeof(struct E131_2009)] = {
 #include "acnraw.h"
 };
 
+#if USE_ACN
+
 int eth_fd = -1;
 
 static uint32_t addr = (239 << 24) | (255 << 16); // ACN Ethernet address 239.255.x.x
@@ -122,6 +124,8 @@ bool eth::write(void)
 	}
 	return false;
 }
+
+#endif
 
 /*
  ******************************************************************************

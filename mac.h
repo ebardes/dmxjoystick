@@ -20,16 +20,20 @@
 
 #include "acn.h"
 
+#define USE_OLA 1
+#define USE_ACN 0
+
 class instance;
 class fixture;
 
 /**
  * The sACN class
  */
+#if USE_ACN
 class eth
 {
-	int sequence;
 	int universe;
+	int sequence;
 
 	struct sockaddr_in sin;
 	struct E131_2009 frame;
@@ -45,6 +49,24 @@ public:
 	inline uint8_t* getBuffer() { return frame.dmx_data; }
 	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
 };
+#endif
+#ifdef USE_OLA
+
+#include <ola/DmxBuffer.h>
+class eth
+{
+	ola::DmxBuffer buffer;
+public:
+	eth();
+	bool openRead(int universe);
+	bool openWrite(int universe);
+	bool read(void);
+	bool write(void);
+
+	inline const uint8_t* getBuffer() { return buffer.GetRaw(); }
+	inline void copyFrom(eth &e) { buffer.Set(e.buffer); }
+};
+#endif
 
 class action
 {
