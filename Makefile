@@ -4,9 +4,9 @@ OPTIMIZE=-O3 -march=native -fno-strict-aliasing
 CXXFLAGS=-g ${OPTIMIZE} -MMD -std=c++11 -Wall
 CFLAGS=-g -MMD -std=c11 -Wall
 
-OBJS=js.o eth.o config.o main.o timer.o display.o bres.o
+OBJS=js.o eth.o config.o main.o timer.o display.o bres.o ola.o
 
-LIBS= -lboost_system -lboost_thread
+LIBS= -lboost_system -lboost_thread $$(pkg-config --cflags --libs libola)
 
 ifeq ($(UNAME_S),SunOS)
 LIBS += -lcurses -lsocket
@@ -40,5 +40,3 @@ docs: README.html
 README.html: README.md
 	./node_modules/markdown-it/bin/markdown-it.js README.md  > README.html
 
-olatest: ola.o
-	$(CXX) $(CXXFLAGS) -o $@ ola.o $$(pkg-config --cflags --libs libola)

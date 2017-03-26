@@ -14,12 +14,23 @@ void display_thread()
 
 void instance::runReader()
 {
+#if USE_ACN
 	while (in.read())
 	{
-		fix.updateSource(in);
-		if (config.xdebug) {
-			std::cout << fix << std::endl;
-		}
+		newData(in);
+	}
+#endif
+
+#if USE_OLA
+	in.read(this);
+#endif
+}
+
+void instance::newData(eth &in)
+{
+	fix.updateSource(in);
+	if (config.xdebug) {
+		std::cout << fix << std::endl;
 	}
 }
 

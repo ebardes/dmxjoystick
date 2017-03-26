@@ -10,9 +10,9 @@
     <output_universe>2</output_universe>
     <joystick device="/dev/input/js0">
 				<map type="button" link="go" number="1" />
-				<map type="analog" link="pan" number="3" min="-32767" max="32767" deadmin="-3500" deadmax="3500" scale="-250" />
-				<map type="analog" link="tilt" number="4" min="-32767" max="32767" deadmin="-3500" deadmax="3500" scale="-300" />
-				<map type="analog" link="iris" number="0" min="-32767" max="32767" deadmin="-3500" deadmax="3500" scale="6000" />
+				<map type="analog" link="pan" number="3" min="-32767" max="32767" deadmin="-3500" deadmax="3500" scale="-500" />
+				<map type="analog" link="tilt" number="4" min="-32767" max="32767" deadmin="-3500" deadmax="3500" scale="-500" />
+				<map type="analog" link="iris" number="0" min="-32767" max="32767" deadmin="-3500" deadmax="3500" scale="9000" />
 				<map type="button" action="release" number="1" />
     </joystick>
 		<fixture address="301">

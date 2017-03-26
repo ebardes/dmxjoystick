@@ -184,6 +184,7 @@ int dmxproperty::get(eth &eth)
 
 void dmxproperty::put(eth &eth, int val)
 {
+	uint8_t bytes[4];
 	int value = val;
 	switch(size)
 	{
@@ -191,13 +192,14 @@ void dmxproperty::put(eth &eth, int val)
 		value += 32768;
 		if (order == 1)
 			value = htons(value);
-		*(int16_t*) (eth.getBuffer() + offset) = value;
+		*(int16_t*) bytes = value;
 		break;
 
 	case 1:
-		(eth.getBuffer() [offset]) = (uint8_t) value;
+		bytes[0] = (uint8_t) value;
 		break;
 	}
+	eth.put(offset, bytes, size);
 }
 
 void dmxproperty::updateValues()

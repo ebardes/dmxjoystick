@@ -46,22 +46,34 @@ public:
 	bool read(void);
 	bool write(void);
 
+	void put(int offset, const uint8_t * bytes, int size) { memcpy(frame.dmx_data + offset, bytes, size); }
+
 	inline uint8_t* getBuffer() { return frame.dmx_data; }
 	inline void copyFrom(eth &e) { memcpy(frame.dmx_data, e.frame.dmx_data, sizeof(frame.dmx_data)); }
 };
 #endif
-#ifdef USE_OLA
 
+#ifdef USE_OLA
 #include <ola/DmxBuffer.h>
+#include <ola/io/SelectServer.h>
+#include <ola/client/ClientWrapper.h>
 class eth
 {
+	int universe;
+	instance *in;
+
+	ola::client::OlaClientWrapper wrapper;
+	ola::io::SelectServer *ss;
 	ola::DmxBuffer buffer;
 public:
 	eth();
 	bool openRead(int universe);
 	bool openWrite(int universe);
-	bool read(void);
+	bool read(instance *);
 	bool write(void);
+	void onframe(const ola::client::DMXMetadata &metadata, const ola::DmxBuffer &data);
+
+	void put(int offset, const uint8_t * bytes, int size) { buffer.SetRange(offset, bytes, size); }
 
 	inline const uint8_t* getBuffer() { return buffer.GetRaw(); }
 	inline void copyFrom(eth &e) { buffer.Set(e.buffer); }
@@ -233,6 +245,7 @@ public:
 	void init(void);
 
 	void runReader(void);
+	void newData(eth &in);
 	void runWriter(void);
 	void runJoystick(void);
 
