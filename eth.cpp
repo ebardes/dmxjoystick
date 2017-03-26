@@ -2,11 +2,11 @@
 
 #include <boost/detail/endian.hpp>
 
+#if USE_ACN
+
 const uint8_t raw_acn_packet[sizeof(struct E131_2009)] = {
 #include "acnraw.h"
 };
-
-#if USE_ACN
 
 int eth_fd = -1;
 

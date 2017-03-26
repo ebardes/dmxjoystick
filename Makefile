@@ -18,17 +18,17 @@ ifeq ($(UNAME_S),Linux)
 LIBS += -lncurses
 endif
 
-all: js olatest
+all: js
 js: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LIBS)
 
-eth.o: acnraw.h
+# eth.o: acnraw.h
 
 acnraw.h: genframe
 	./genframe
 
 clean:
-	rm -f $(OBJS) $(OBJS:.o=.d) genframe genframe.o genframe.d acnraw.h js olatest ola.o
+	rm -f $(OBJS) $(OBJS:.o=.d) genframe genframe.o genframe.d acnraw.h js
 
 -include *.d
 
